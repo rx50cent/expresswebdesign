@@ -491,25 +491,27 @@ textarea.field-input{resize:vertical;line-height:1.6}
     <h2>Tell us about your <span class="accent">project</span></h2>
     <p style="font-size:17px;color:var(--ink-soft);line-height:1.7;margin-bottom:44px;max-width:520px;">Fill out the form and we&#8217;ll get back to you within a few hours. Attach inspiration images or your current site if you have one.</p>
 
-    <form id="contactForm" style="display:flex;flex-direction:column;gap:24px;">
+    <form id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:24px;">
+      <input type="hidden" name="form-name" value="contact" />
+      <p hidden><label>Leave this empty if you are human: <input name="bot-field" /></label></p>
       <div class="form-grid-2">
         <div>
           <label class="field-label">Your name <span class="req">*</span></label>
-          <input id="f-name" type="text" class="field-input" placeholder="John Smith" required />
+          <input id="f-name" name="name" type="text" class="field-input" placeholder="John Smith" required />
         </div>
         <div>
           <label class="field-label">Phone number</label>
-          <input id="f-phone" type="tel" class="field-input" placeholder="(416) 000-0000" />
+          <input id="f-phone" name="phone" type="tel" class="field-input" placeholder="(416) 000-0000" />
         </div>
       </div>
       <div class="form-grid-2">
         <div>
           <label class="field-label">Email address <span class="req">*</span></label>
-          <input id="f-email" type="email" class="field-input" placeholder="you@yourbusiness.com" required />
+          <input id="f-email" name="email" type="email" class="field-input" placeholder="you@yourbusiness.com" required />
         </div>
         <div>
           <label class="field-label">Business name</label>
-          <input id="f-biz" type="text" class="field-input" placeholder="Your Business Ltd." />
+          <input id="f-biz" name="business" type="text" class="field-input" placeholder="Your Business Ltd." />
         </div>
       </div>
       <div>
@@ -523,11 +525,11 @@ textarea.field-input{resize:vertical;line-height:1.6}
       </div>
       <div>
         <label class="field-label">Current website URL <span style="font-size:12px;font-weight:400;color:var(--ink-muted)">(if you have one)</span></label>
-        <input id="f-url" type="url" class="field-input" placeholder="https://yoursite.com" />
+        <input id="f-url" name="website" type="url" class="field-input" placeholder="https://yoursite.com" />
       </div>
       <div>
         <label class="field-label">Tell us about your project <span class="req">*</span></label>
-        <textarea id="f-msg" class="field-input" rows="5" placeholder="What does your business do? What do you want your website to accomplish? Any specific features?" required></textarea>
+        <textarea id="f-msg" name="message" class="field-input" rows="5" placeholder="What does your business do? What do you want your website to accomplish? Any specific features?" required></textarea>
       </div>
       <div>
         <label class="field-label">Inspiration images <span style="font-size:12px;font-weight:400;color:var(--ink-muted)">(optional &#8212; show us what you like)</span></label>
@@ -535,7 +537,7 @@ textarea.field-input{resize:vertical;line-height:1.6}
           <div class="dropzone-icon">&#128444;</div>
           <div class="dropzone-title">Click to upload or drag &amp; drop</div>
           <div class="dropzone-sub">PNG, JPG, GIF up to 10MB each &middot; Max 5 files</div>
-          <input type="file" id="fileInput" multiple accept="image/*" style="display:none" />
+          <input type="file" id="fileInput" name="inspiration" multiple accept="image/*" style="display:none" />
         </div>
         <div class="file-preview" id="filePreview"></div>
       </div>
@@ -543,12 +545,12 @@ textarea.field-input{resize:vertical;line-height:1.6}
         <button type="submit" class="submit-btn" id="submitBtn">Send My Free Quote Request &#8594;</button>
         <p class="submit-note">We reply within a few hours &middot; No spam, ever</p>
       </div>
-      <div class="success-msg" id="successMsg">
-        <div class="success-icon">&#10003;</div>
-        <div class="success-title">Quote request sent!</div>
-        <div class="success-body">We&#8217;ll get back to you at your email within a few hours. Check your inbox!</div>
-      </div>
     </form>
+    <div class="success-msg" id="successMsg">
+      <div class="success-icon">&#10003;</div>
+      <div class="success-title" id="successTitle">Quote request sent!</div>
+      <div class="success-body" id="successBody">We&#8217;ll get back to you at your email within a few hours. Check your inbox!</div>
+    </div>
   </div>
 </section>
 
@@ -637,17 +639,41 @@ textarea.field-input{resize:vertical;line-height:1.6}
     dz.querySelector('.dropzone-title').textContent = files.length + ' file(s) selected — click to add more';
   }
 
-  // Form submit
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
+  // Form submit — posts to Netlify Forms (active once deployed on Netlify).
+  var form = document.getElementById('contactForm');
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
     var btn = document.getElementById('submitBtn');
+    var origText = btn.textContent;
     btn.textContent = 'Sending…';
     btn.disabled = true;
     btn.style.background = 'var(--ink-muted)';
-    setTimeout(function() {
-      document.getElementById('contactForm').style.display = 'none';
-      document.getElementById('successMsg').style.display = 'block';
-    }, 1200);
+
+    // Build the payload: named form fields + our JS-tracked image files.
+    var fd = new FormData(form);
+    fd.delete('inspiration');
+    files.forEach(function(f) { fd.append('inspiration', f); });
+
+    fetch('/', { method: 'POST', body: fd })
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var first = (fd.get('name') || '').toString().trim().split(' ')[0];
+        var email = (fd.get('email') || '').toString().trim();
+        document.getElementById('successTitle').textContent = first ? ('Thank you, ' + first + '!') : 'Thank you!';
+        document.getElementById('successBody').textContent =
+          'Your quote request is on its way.' + (email ? ' We’ll reply to ' + email : ' We’ll be in touch') +
+          ' within a few hours. Feel free to message us on WhatsApp in the meantime.';
+        form.style.display = 'none';
+        var ok = document.getElementById('successMsg');
+        ok.style.display = 'block';
+        ok.scrollIntoView({ block: 'center' });
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = origText;
+        btn.style.background = '';
+        alert('Sorry — something went wrong sending your request. Please email rx50cent@gmail.com or message us on WhatsApp and we’ll get right back to you.');
+      });
   });
 })();
 </script>
