@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thank you — Express Web Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{--blue:#4A6CF7;--blue-dark:#3451D1;--ink:#0F1623;--ink-soft:#4A5568;--border:#E2E8F0;--white:#FFFFFF;--green:#16A34A;--green-pale:#DCFCE7}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--white);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;-webkit-font-smoothing:antialiased}
+  .logo{font-size:20px;font-weight:800;letter-spacing:-0.02em;margin-bottom:44px;color:var(--ink);text-decoration:none}
+  .logo span{color:var(--blue)}
+  .check{width:84px;height:84px;border-radius:50%;background:var(--green-pale);color:var(--green);font-size:44px;display:flex;align-items:center;justify-content:center;margin:0 auto 28px}
+  h1{font-size:32px;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px}
+  p{font-size:17px;color:var(--ink-soft);line-height:1.7;max-width:480px;margin:0 auto 10px}
+  .btns{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .btn{font-size:15px;font-weight:700;padding:13px 26px;border-radius:10px;text-decoration:none;transition:all .2s}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 6px 20px rgba(74,108,247,.3)}
+  .btn-primary:hover{background:var(--blue-dark)}
+  .btn-ghost{color:var(--blue);border:1.5px solid var(--border)}
+  .btn-ghost:hover{border-color:var(--blue)}
+</style>
+</head>
+<body>
+  <a href="/" class="logo">Express <span>Web</span> Design</a>
+  <div class="check">&#10003;</div>
+  <h1>Thank you! Your request is in.</h1>
+  <p>We&#8217;ve received your quote request and we&#8217;ll get back to you within a few hours.</p>
+  <p>Want a faster reply? Message us on WhatsApp.</p>
+  <div class="btns">
+    <a href="https://wa.me/14168778607" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
+    <a href="/" class="btn btn-ghost">&#8592; Back to home</a>
+  </div>
+</body>
+</html>

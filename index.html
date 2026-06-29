@@ -491,7 +491,7 @@ textarea.field-input{resize:vertical;line-height:1.6}
     <h2>Tell us about your <span class="accent">project</span></h2>
     <p style="font-size:17px;color:var(--ink-soft);line-height:1.7;margin-bottom:44px;max-width:520px;">Fill out the form and we&#8217;ll get back to you within a few hours. Attach inspiration images or your current site if you have one.</p>
 
-    <form id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:24px;">
+    <form id="contactForm" name="contact" method="POST" action="/thank-you.html" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:24px;">
       <input type="hidden" name="form-name" value="contact" />
       <p hidden><label>Leave this empty if you are human: <input name="bot-field" /></label></p>
       <div class="form-grid-2">
@@ -525,19 +525,19 @@ textarea.field-input{resize:vertical;line-height:1.6}
       </div>
       <div>
         <label class="field-label">Current website URL <span style="font-size:12px;font-weight:400;color:var(--ink-muted)">(if you have one)</span></label>
-        <input id="f-url" name="website" type="url" class="field-input" placeholder="https://yoursite.com" />
+        <input id="f-url" name="website" type="text" inputmode="url" class="field-input" placeholder="yoursite.com" />
       </div>
       <div>
         <label class="field-label">Tell us about your project <span class="req">*</span></label>
         <textarea id="f-msg" name="message" class="field-input" rows="5" placeholder="What does your business do? What do you want your website to accomplish? Any specific features?" required></textarea>
       </div>
       <div>
-        <label class="field-label">Inspiration images <span style="font-size:12px;font-weight:400;color:var(--ink-muted)">(optional &#8212; show us what you like)</span></label>
+        <label class="field-label">Inspiration files <span style="font-size:12px;font-weight:400;color:var(--ink-muted)">(optional &#8212; images or PDFs you like)</span></label>
         <div class="dropzone" id="dropzone">
           <div class="dropzone-icon">&#128444;</div>
           <div class="dropzone-title">Click to upload or drag &amp; drop</div>
-          <div class="dropzone-sub">PNG, JPG, GIF up to 10MB each &middot; Max 5 files</div>
-          <input type="file" id="fileInput" name="inspiration" multiple accept="image/*" style="display:none" />
+          <div class="dropzone-sub">PNG, JPG, PDF up to 10MB each &middot; Max 5 files</div>
+          <input type="file" id="fileInput" name="inspiration" multiple accept="image/*,application/pdf,.pdf" style="display:none" />
         </div>
         <div class="file-preview" id="filePreview"></div>
       </div>
@@ -604,76 +604,83 @@ textarea.field-input{resize:vertical;line-height:1.6}
     });
   });
 
-  // File upload
+  // File upload — keep the real <input> in sync via DataTransfer so files
+  // (including drag-dropped ones) are sent with the native form POST.
   var dz = document.getElementById('dropzone');
   var fi = document.getElementById('fileInput');
   var fp = document.getElementById('filePreview');
+  var dzTitle = dz.querySelector('.dropzone-title');
   var files = [];
 
   dz.addEventListener('click', function() { fi.click(); });
   fi.addEventListener('change', function() { addFiles(this.files); });
   dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = 'var(--blue)'; dz.style.background = 'var(--blue-light)'; });
-  dz.addEventListener('dragleave', function() { if (!dz.classList.contains('loaded')) { dz.style.borderColor = ''; dz.style.background = ''; } });
+  dz.addEventListener('dragleave', function() { if (!files.length) { dz.style.borderColor = ''; dz.style.background = ''; } });
   dz.addEventListener('drop', function(e) { e.preventDefault(); addFiles(e.dataTransfer.files); });
 
   function addFiles(list) {
-    Array.from(list).slice(0, 5 - files.length).forEach(function(f) {
-      if (!f.type.startsWith('image/')) return;
+    Array.from(list).forEach(function(f) {
+      if (files.length >= 5) return;
+      var isImg = f.type.indexOf('image/') === 0;
+      var isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+      if (!isImg && !isPdf) return;
       files.push(f);
-      var r = new FileReader();
-      r.onload = function(ev) {
-        var wrap = document.createElement('div');
-        wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border);flex-shrink:0';
-        var img = document.createElement('img');
-        img.src = ev.target.result;
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
-        var x = document.createElement('button');
-        x.innerHTML = '&#10005;';
-        x.style.cssText = 'position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:50%;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0';
-        x.addEventListener('click', function(e) { e.stopPropagation(); wrap.remove(); });
-        wrap.appendChild(img); wrap.appendChild(x); fp.appendChild(wrap);
-      };
-      r.readAsDataURL(f);
     });
-    dz.classList.add('loaded');
-    dz.querySelector('.dropzone-title').textContent = files.length + ' file(s) selected — click to add more';
+    refresh();
   }
 
-  // Form submit — posts to Netlify Forms (active once deployed on Netlify).
+  function refresh() {
+    var dt = new DataTransfer();
+    files.forEach(function(f) { dt.items.add(f); });
+    fi.files = dt.files;
+    renderPreviews();
+    if (files.length) {
+      dz.classList.add('loaded');
+      dzTitle.textContent = files.length + ' file(s) selected — click to add more';
+    } else {
+      dz.classList.remove('loaded');
+      dz.style.borderColor = '';
+      dz.style.background = '';
+      dzTitle.textContent = 'Click to upload or drag & drop';
+    }
+  }
+
+  function renderPreviews() {
+    fp.innerHTML = '';
+    files.forEach(function(f, idx) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border);flex-shrink:0;background:#FAFBFF;display:flex;align-items:center;justify-content:center';
+      if (f.type.indexOf('image/') === 0) {
+        var img = document.createElement('img');
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+        var r = new FileReader();
+        r.onload = function(ev) { img.src = ev.target.result; };
+        r.readAsDataURL(f);
+        wrap.appendChild(img);
+      } else {
+        var doc = document.createElement('div');
+        doc.style.cssText = 'text-align:center;font-size:11px;font-weight:700;color:var(--ink-soft);line-height:1.2';
+        doc.innerHTML = '<div style="font-size:24px">📄</div>PDF';
+        wrap.appendChild(doc);
+      }
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.innerHTML = '&#10005;';
+      x.style.cssText = 'position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:50%;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0';
+      x.addEventListener('click', function(e) { e.stopPropagation(); files.splice(idx, 1); refresh(); });
+      wrap.appendChild(x);
+      fp.appendChild(wrap);
+    });
+  }
+
+  // Form submit — native POST to Netlify Forms; Netlify redirects to /thank-you.html.
   var form = document.getElementById('contactForm');
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
+  form.addEventListener('submit', function() {
     var btn = document.getElementById('submitBtn');
-    var origText = btn.textContent;
     btn.textContent = 'Sending…';
-    btn.disabled = true;
     btn.style.background = 'var(--ink-muted)';
-
-    // Build the payload: named form fields + our JS-tracked image files.
-    var fd = new FormData(form);
-    fd.delete('inspiration');
-    files.forEach(function(f) { fd.append('inspiration', f); });
-
-    fetch('/', { method: 'POST', body: fd })
-      .then(function(res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        var first = (fd.get('name') || '').toString().trim().split(' ')[0];
-        var email = (fd.get('email') || '').toString().trim();
-        document.getElementById('successTitle').textContent = first ? ('Thank you, ' + first + '!') : 'Thank you!';
-        document.getElementById('successBody').textContent =
-          'Your quote request is on its way.' + (email ? ' We’ll reply to ' + email : ' We’ll be in touch') +
-          ' within a few hours. Feel free to message us on WhatsApp in the meantime.';
-        form.style.display = 'none';
-        var ok = document.getElementById('successMsg');
-        ok.style.display = 'block';
-        ok.scrollIntoView({ block: 'center' });
-      })
-      .catch(function() {
-        btn.disabled = false;
-        btn.textContent = origText;
-        btn.style.background = '';
-        alert('Sorry — something went wrong sending your request. Please email rx50cent@gmail.com or message us on WhatsApp and we’ll get right back to you.');
-      });
+    btn.style.pointerEvents = 'none';
+    // No preventDefault: the browser submits the form to Netlify for processing.
   });
 })();
 </script>
