@@ -69,8 +69,6 @@ nav{background:var(--white);border-bottom:1px solid var(--border);position:stick
 .nav-links a:hover{color:var(--blue)}
 .nav-cta{position:relative;overflow:hidden;background:var(--blue);color:var(--white);font-size:14px;font-weight:600;padding:10px 24px;border-radius:8px;text-decoration:none;transition:background 0.2s}
 .nav-cta:hover{background:var(--blue-dark)}
-.nav-cta::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:nav-cta-shine 3s ease-in-out infinite;pointer-events:none}
-@keyframes nav-cta-shine{0%{left:-75%}18%{left:130%}100%{left:130%}}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,#F0F4FF 0%,#F5F0FF 50%,#EEF2FF 100%);padding:70px 6% 60px;display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center;position:relative;overflow:hidden}
@@ -138,7 +136,7 @@ h2{font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-0.025em;colo
 .chk{color:var(--green);font-weight:800;flex-shrink:0}
 .pkg-cta{display:block;text-align:center;background:var(--blue);color:var(--white);font-size:14px;font-weight:700;padding:13px;border-radius:10px;text-decoration:none;box-shadow:0 4px 14px rgba(74,108,247,0.25);transition:background 0.2s}
 .pkg-cta:hover{background:var(--blue-dark)}
-.pkg-cta.outline{background:transparent;color:var(--blue);border:1.5px solid var(--blue);box-shadow:none}
+.pkg-cta.outline{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}
 .pkg-cta.outline:hover{background:var(--blue);color:var(--white)}
 .pkg-timeline{text-align:center;font-size:12px;color:var(--ink-muted);margin-top:12px;font-weight:600}
 
@@ -160,7 +158,7 @@ h2{font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-0.025em;colo
 .mpop .mplan-features li{border-bottom-color:rgba(74,108,247,0.12)}
 .mplan-cta{display:block;text-align:center;background:transparent;color:var(--blue);border:1.5px solid var(--blue);font-size:14px;font-weight:700;padding:13px;border-radius:10px;text-decoration:none;transition:background 0.2s,color 0.2s}
 .mplan-cta:hover{background:var(--blue);color:var(--white)}
-.mplan-cta.solid{background:var(--blue);color:var(--white);box-shadow:0 4px 14px rgba(74,108,247,0.25);border:none}
+.mplan-cta.solid{background:var(--blue);color:var(--white);border:none}
 .mplan-cta.solid:hover{background:var(--blue-dark)}
 .monthly-note{text-align:center;font-size:13px;color:var(--ink-muted);margin-top:24px}
 
@@ -275,6 +273,13 @@ textarea.field-input{resize:vertical;line-height:1.6}
   .nav-links{display:none}
   .site-footer{flex-direction:column;align-items:flex-start}
 }
+
+/* ── Shine sweep + 3D raised look on every button (shine every 3s) ── */
+.nav-cta,.btn-blue,.ticker-cta,.pkg-cta,.mplan-cta,.btn-white,.submit-btn{position:relative;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,0.16),0 7px 16px rgba(0,0,0,0.16);transition:background 0.2s,color 0.2s,transform 0.12s ease,box-shadow 0.12s ease}
+.nav-cta:hover,.btn-blue:hover,.ticker-cta:hover,.pkg-cta:hover,.mplan-cta:hover,.btn-white:hover,.submit-btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(0,0,0,0.16),0 11px 24px rgba(0,0,0,0.20)}
+.nav-cta:active,.btn-blue:active,.ticker-cta:active,.pkg-cta:active,.mplan-cta:active,.btn-white:active,.submit-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,0.16),0 4px 10px rgba(0,0,0,0.18)}
+.nav-cta::before,.btn-blue::before,.ticker-cta::before,.pkg-cta::before,.mplan-cta::before,.btn-white::before,.submit-btn::before{content:'';position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.55) 50%,rgba(255,255,255,0) 100%);transform:skewX(-20deg);animation:btn-shine 3s ease-in-out infinite;pointer-events:none}
+@keyframes btn-shine{0%{left:-75%}18%{left:130%}100%{left:130%}}
 </style>
 </head>
 <body>
