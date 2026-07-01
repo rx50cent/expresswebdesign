@@ -267,12 +267,33 @@ textarea.field-input{resize:vertical;line-height:1.6}
 @media(max-width:960px){
   .hero{grid-template-columns:1fr}
   .hero-img-wrap{display:none}
-  .triptych-grid,.pkg-grid,.monthly-grid,.why-grid,.reviews-grid{grid-template-columns:1fr}
+  .triptych-grid,.pkg-grid,.monthly-grid,.why-grid,.reviews-grid,.work-grid{grid-template-columns:1fr}
   .faq-grid,.form-grid-2{grid-template-columns:1fr}
   .pkg.featured{transform:none}
   .nav-links{display:none}
   .site-footer{flex-direction:column;align-items:flex-start}
 }
+
+/* ── Our Work / portfolio ── */
+.work{background:var(--white)}
+.work-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.work-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s}
+.work-card:hover{border-color:var(--blue);box-shadow:0 14px 34px rgba(15,22,35,0.10);transform:translateY(-3px)}
+.work-thumb{position:relative;cursor:zoom-in;overflow:hidden;background:#0F1623;aspect-ratio:16/9}
+.work-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform 0.4s ease}
+.work-card:hover .work-thumb img{transform:scale(1.05)}
+.work-zoom{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.62);color:#fff;font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;pointer-events:none}
+.work-info{padding:24px 26px 28px}
+.work-info h3{font-size:20px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.work-url{font-size:13px;font-weight:700;color:var(--blue);text-decoration:none}
+.work-url:hover{text-decoration:underline}
+.work-desc{font-size:15px;color:var(--ink-soft);line-height:1.7;margin-top:12px}
+.work-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.work-tag{font-size:12px;font-weight:600;color:var(--ink-soft);background:var(--bg);border:1px solid var(--border);padding:4px 12px;border-radius:20px}
+.lightbox{position:fixed;inset:0;background:rgba(10,14,25,0.92);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;cursor:zoom-out;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.lightbox.open{display:flex}
+.lightbox img{max-width:96vw;max-height:92vh;border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,0.6)}
+.lightbox-close{position:absolute;top:18px;right:26px;color:#fff;font-size:36px;line-height:1;background:none;border:none;cursor:pointer;font-weight:300}
 
 /* ── Shine sweep + 3D raised look on every button (shine every 3s) ── */
 .nav-cta,.btn-blue,.ticker-cta,.pkg-cta,.mplan-cta,.btn-white,.submit-btn{position:relative;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,0.16),0 7px 16px rgba(0,0,0,0.16);transition:background 0.2s,color 0.2s,transform 0.12s ease,box-shadow 0.12s ease}
@@ -508,6 +529,42 @@ textarea.field-input{resize:vertical;line-height:1.6}
   </div>
 </section>
 
+<!-- ===== OUR WORK ===== -->
+<section class="work" id="work">
+  <div class="section-label">Our work</div>
+  <h2>Real sites we've <span class="accent">designed &amp; built</span></h2>
+  <p class="section-sub">Live web apps we built from scratch &#8212; not templates. Click any screenshot to enlarge.</p>
+  <div class="work-grid">
+
+    <div class="work-card">
+      <div class="work-thumb" onclick="openLightbox('/images/work-lunabee.png')">
+        <img src="/images/work-lunabee.png" alt="LunaBee online English lesson: live video call between teacher and student with shared lesson notes and materials" loading="lazy">
+        <span class="work-zoom">&#128269; Click to enlarge</span>
+      </div>
+      <div class="work-info">
+        <h3>LunaBee &#8212; Online English Tutoring</h3>
+        <a class="work-url" href="https://lunabee.net" target="_blank" rel="noopener">lunabee.net &#8599;</a>
+        <p class="work-desc">A complete platform for 1-on-1 English lessons. Teacher and student meet over live video, work through interactive lesson materials side by side, and share notes that both can edit in real time.</p>
+        <div class="work-tags"><span class="work-tag">Live video calls</span><span class="work-tag">Interactive lessons</span><span class="work-tag">Real-time shared notes</span><span class="work-tag">Accounts &amp; roles</span></div>
+      </div>
+    </div>
+
+    <div class="work-card">
+      <div class="work-thumb" onclick="openLightbox('/images/work-gemtracker.jpg')">
+        <img src="/images/work-gemtracker.jpg" alt="Epic War Gem Tracker: sortable table of in-game gems showing rarity, special stats and power" loading="lazy">
+        <span class="work-zoom">&#128269; Click to enlarge</span>
+      </div>
+      <div class="work-info">
+        <h3>Epic War &#8212; Gem Tracker</h3>
+        <a class="work-url" href="https://epicgemtracker.com" target="_blank" rel="noopener">epicgemtracker.com &#8599;</a>
+        <p class="work-desc">A companion web app that lets players of the game Epic War catalogue their gems. Filter by element and rarity, sort by power, switch between card and table views, and track detailed stats for every gem &#8212; all saved to a personal account.</p>
+        <div class="work-tags"><span class="work-tag">Filtering &amp; sorting</span><span class="work-tag">Custom database</span><span class="work-tag">User logins</span><span class="work-tag">Mobile-friendly</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- ===== FAQ ===== -->
 <section class="faq" id="faq">
   <div class="section-label">Common questions</div>
@@ -624,6 +681,12 @@ textarea.field-input{resize:vertical;line-height:1.6}
 <!-- ===== WHATSAPP FLOAT ===== -->
 <a href="https://wa.me/14168778607" class="wa-float" title="Chat on WhatsApp" target="_blank" rel="noopener noreferrer">&#128172;</a>
 
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" type="button" aria-label="Close" onclick="closeLightbox()">&times;</button>
+  <img id="lightbox-img" src="" alt="Enlarged screenshot">
+</div>
+
 <!-- ===== JAVASCRIPT ===== -->
 <script>
 (function() {
@@ -736,6 +799,19 @@ textarea.field-input{resize:vertical;line-height:1.6}
     btn.style.pointerEvents = 'none';
     // No preventDefault: the browser submits the form to Netlify for processing.
   });
+
+  // Portfolio lightbox
+  window.openLightbox = function(src) {
+    var lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeLightbox = function() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') window.closeLightbox(); });
 })();
 </script>
 </body>
